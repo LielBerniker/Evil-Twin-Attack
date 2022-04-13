@@ -3,7 +3,9 @@ import os
 import re
 # We will be using the subprocess module to run commands on Kali Linux.
 import subprocess
-from scapy.all import ARP, Ether, srp
+from scapy.all import *
+from scapy.layers.l2 import ARP, Ether
+
 
 def find_all_wifi_available():
     # Regex to find wireless interfaces. We're making the assumption they will all be wlan0 or higher.
@@ -38,6 +40,7 @@ def find_all_wifi_available():
     hacknic = check_wifi_result[int(wifi_interface_choice)]
     return hacknic
 
+
 def find_all_users_in_network(target_ip):
     # create ARP packet
     arp = ARP(pdst=target_ip)
@@ -55,8 +58,8 @@ def find_all_users_in_network(target_ip):
     # print clients
     print("Available devices in the network:")
     print("IP" + " " * 18 + "MAC")
-    for index,client in clients:
-        print(f"{index}"+"{:16}    {}".format(client['ip'], client['mac']))
+    for index, client in clients:
+        print(f"{index}" + "{:16}    {}".format(client['ip'], client['mac']))
     while True:
         device_choice = input("Please select the device you want to use for the attack: ")
         try:
@@ -72,6 +75,5 @@ def find_all_users_in_network(target_ip):
 
 if __name__ == '__main__':
     wifi_info = find_all_wifi_available()
-
-
-
+    user_device_info = find_all_users_in_network(wifi_info)
+    
