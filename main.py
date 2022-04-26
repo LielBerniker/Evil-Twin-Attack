@@ -134,39 +134,6 @@ def find_all_wifi_available():
             print("Please try again.")
 
 
-
-def find_all_users_in_network(target_ip):
-    # create ARP packet
-    arp = ARP(pdst=target_ip)
-    # create the Ether broadcast packet
-    # ff:ff:ff:ff:ff:ff MAC address indicates broadcasting
-    ether = Ether(dst="ff:ff:ff:ff:ff:ff")
-    # stack them
-    packet = ether / arp
-    result = srp(packet, timeout=3, verbose=0)[0]
-    # a list of clients, we will fill this in the upcoming loop
-    clients = []
-    for sent, received in result:
-        # for each response, append ip and mac address to `clients` list
-        clients.append({'ip': received.psrc, 'mac': received.hwsrc})
-    # print clients
-    print("Available devices in the network:")
-    print("IP" + " " * 18 + "MAC")
-    for index, client in clients:
-        print(f"{index}" + "{:16}    {}".format(client['ip'], client['mac']))
-    while True:
-        device_choice = input("Please select the device you want to use for the attack: ")
-        try:
-            if clients[int(device_choice)]:
-                break
-        except:
-            print("Please enter a number that corresponds with the choices available.")
-
-        # For easy reference we call the selected interface hacknic
-    user_device = clients[int(device_choice)]
-    return user_device
-
-
 if __name__ == '__main__':
 
     # wifi_info = find_all_wifi_available()
