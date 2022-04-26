@@ -76,4 +76,3 @@ def find_all_users_in_network(target_ip):
 if __name__ == '__main__':
     wifi_info = find_all_wifi_available()
     user_device_info = find_all_users_in_network(wifi_info)
-    
