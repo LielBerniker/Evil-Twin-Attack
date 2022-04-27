@@ -1,22 +1,17 @@
 from ctypes import Union
 import os
-# We require regular expressions.
 import re
 import csv
-# We will be using the subprocess module to run commands on Kali Linux.
 import subprocess
 import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
 
 
 def MonitorMode(iface):
-    # os.system("sudo airmon-ng check kill")
     os.system("sudo ifconfig " + iface + " down")
     os.system("sudo iwconfig " + iface + " mode monitor")
     os.system("sudo ifconfig " + iface + " up")
-    # os.system("clear")
-    # iface = str(iface)+'mon'
-    # return iface
+
 
 
 def WifiAdapterFinder():
@@ -53,5 +48,4 @@ def WifiAdapterFinder():
 
     # For easy reference we call the selected interface hacknic
     hacknic = check_wifi_result[int(wifi_interface_choice)]
-    print (hacknic)
     return hacknic
