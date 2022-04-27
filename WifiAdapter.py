@@ -1,10 +1,10 @@
 from ctypes import Union
 import os
-import re
-import csv
+import re # import for regular expressions-Regex.
+# We will be using the subprocess module to run commands
 import subprocess
 import scapy.all as scapy
-from scapy.layers.l2 import ARP, Ether
+#from scapy.layers.l2 import ARP, Ether
 
 
 def MonitorMode(iface):
@@ -15,15 +15,16 @@ def MonitorMode(iface):
 
 
 def WifiAdapterFinder():
-    # Regex to find wireless interfaces. We're making the assumption they will all be wlan0 or higher.
+    # Regex to find wireless interfaces.
+    # wlan0 = wifi card
     wlan_pattern1 = re.compile("^wlan[0-9]+")
     wlan_pattern2 = re.compile("wlxc83a35c2e0b4")
 
-    # Python allows is to run system commands by using a function provided by the subprocess module.
-    # subprocess.run(<list of command line arguments goes here>)
+    # Subprocess is the task of running other programs in Python by creating a new process
+    # We run the iwconfig command to look for wireless interfaces.
     # The script is the parent process and creates a child process which runs the system command,
     # and will only continue once the child process has completed.
-    # We run the iwconfig command to look for wireless interfaces.
+    # Using the regex.findall () to get a list of matched strings
     check_wifi_result1 = wlan_pattern1.findall(subprocess.run(["iwconfig"], capture_output=True).stdout.decode())
     check_wifi_result2 = wlan_pattern2.findall(subprocess.run(["iwconfig"], capture_output=True).stdout.decode())
     check_wifi_result = check_wifi_result1+check_wifi_result2
@@ -41,6 +42,7 @@ def WifiAdapterFinder():
     while True:
         wifi_interface_choice = input("Please select the interface you want to use for the attack: ")
         try:
+            # checking if the wifi_interface_choice exist in our list
             if check_wifi_result[int(wifi_interface_choice)]:
                 break
         except:
@@ -48,4 +50,5 @@ def WifiAdapterFinder():
 
     # For easy reference we call the selected interface hacknic
     hacknic = check_wifi_result[int(wifi_interface_choice)]
+    print (hacknic)
     return hacknic
