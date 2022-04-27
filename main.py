@@ -12,11 +12,13 @@ import time
 
 AvialableWifiNetworks = []
 def PacketHendler(packet):
+    #if packet end with 11 like 802.11
     if packet.haslayer(sc.Dot11):
         #type -menegment subtype-beacon
         if packet.type==0 and packet.subtype==8:
             #address 2 - transmitter.
             exist = False
+            # add the packet to AvialableWifiNetworks if not already in
             for pkt in AvialableWifiNetworks:
                 if packet.addr2 == pkt.addr2:
                     exist = True
@@ -24,16 +26,16 @@ def PacketHendler(packet):
                 AvialableWifiNetworks.append(packet)
                 print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
 
+#  hacknic = selected interface
 def WifiNetworksFinder(hacknic):
     start_time = time.time()
     seconds = 10
-    sc.sniff(iface=hacknic,prn = PacketHendler , timeout = 10)
-    # while True:
-    #     current_time = time.time()
-    #     elapsed_time = current_time - start_time
-    #     if elapsed_time > seconds:
-    #         break
-    print("\n\n\nThe Avialable Wifi Netwroks are:")
+    #  iface = the interfaces that we would like to sniff on
+    # prn = allows us to pass a function that executes with each packet sniffed
+    sc.sniff(iface=hacknic, prn=PacketHendler , timeout = 10)
+
+    # printing the Available Wifi Networks withe their ssid(name) and their mac address
+    print("\n\n\nThe Available Wifi Networks are:")
     for index, item in enumerate(AvialableWifiNetworks):
         print(f"{index} - SSID : {item.info} , MAC Address : {item.addr2}")
     
