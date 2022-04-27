@@ -10,11 +10,13 @@ from scapy.layers.l2 import ARP, Ether
 
 
 def MonitorMode(iface):
-    os.system("sudo airmon-ng check kill")
-    os.system("sudo airmon-ng start "+ iface)
-    os.system("clear")
-    iface = str(iface)+'mon'
-    return iface
+    # os.system("sudo airmon-ng check kill")
+    os.system("sudo ifconfig " + iface + " down")
+    os.system("sudo iwconfig " + iface + " mode monitor")
+    os.system("sudo ifconfig " + iface + " up")
+    # os.system("clear")
+    # iface = str(iface)+'mon'
+    # return iface
 
 
 def WifiAdapterFinder():
