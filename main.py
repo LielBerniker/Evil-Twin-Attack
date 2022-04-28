@@ -9,6 +9,7 @@ import Twin_create as TC
 from scapy import all as sc
 import time
 
+
 AvialableWifiNetworks = []
 Clients = []
 ChosenWifiMA = ""
@@ -27,6 +28,8 @@ def PacketHendler(packet):
                 AvialableWifiNetworks.append(packet)
                 print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
 
+
+
 #  hacknic = selected interface
 def WifiNetworksFinder(hacknic):
     start_time = time.time()
@@ -36,10 +39,10 @@ def WifiNetworksFinder(hacknic):
     sc.sniff(iface=hacknic, prn=PacketHendler , timeout = 10)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
-    print("\n\n\nThe Available Wifi Networks are:")
+    print("\n\n\nThe Available Wifi Networks are:\\n")
     for index, item in enumerate(AvialableWifiNetworks):
         print(f"{index} - SSID : {item.info} , MAC Address : {item.addr2} ,")
-    
+    print("\n\n")
     while True:
         wifi_network_choice = input("Please select the Wifi network you want to use for the attack: ")
         try:
@@ -49,6 +52,23 @@ def WifiNetworksFinder(hacknic):
             print("Please enter a number that corresponds with the choices available.")
     return AvialableWifiNetworks[int(wifi_network_choice)].addr2
 
+
+def ClientsFinder(hacknic):
+    sc.sniff(iface=hacknic, prn=CLientsSniffing , timeout = 40)
+    print("\n\n\nThe Clients who connected to the chosen wifi are:\\n")
+    for index, item in enumerate(Clients):
+        print(f"{index} MAC Address : {item} ,")
+    print("\n\n")
+    while True:
+        Chosen_Client = input("Please select the Wifi Client you want to attack: ")
+        try:
+            if Clients[int(Chosen_Client)]:
+                break
+        except:
+            print("Please enter a number that corresponds with the choices available.")
+    return Clients[int(Chosen_Client)]
+
+
 def CLientsSniffing(pkt):
     stamgmtstypes = (0, 2, 4)
     # Make sure the packet has the Scapy Dot11 layer present
@@ -56,24 +76,23 @@ def CLientsSniffing(pkt):
         # Check to make sure this is a management frame (type=0) and that
         # the subtype is one of our management frame subtypes indicating a
         # a wireless client
-        if pkt.type == 0 and pkt.subtype in stamgmtstypes:
-            if (pkt.addr1 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA):
-                if pkt.addr2 not in Clients:
-                    Clients.append(pkt.addr1)
+        # if pkt.type == 0 and pkt.subtype in stamgmtstypes:
+        #     if (pkt.addr1 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA):
+        #         print(pkt.summary())
+        #         if pkt.info not in Clients:
+        #             Clients.append(pkt.info)
+        if pkt.addr2 not in AvialableWifiNetworks and pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
+            Clients.append(pkt.addr2)
+            # print(len(Clients),"     " ,pkt.addr2)
 
-def ClientsFinder(hacknic):
-    sc.sniff(iface=hacknic, prn=CLientsSniffing , timeout = 30)
 
 
 if __name__ == "__main__":
     hacknic = WAF.WifiAdapterFinder()
     WAF.MonitorMode(hacknic)
     ChosenWifiMA = WifiNetworksFinder(hacknic)
+    print("the chosen wifi is : " , ChosenWifiMA)
     ClientsFinder(hacknic)
-    for addr in Clients:
-        print(addr)
-    # print("The chosen wifi is : %s" , WifiNetworksFinder(hacknic))
-    # SN.
 
 
 
