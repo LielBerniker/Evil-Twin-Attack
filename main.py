@@ -30,12 +30,13 @@ def PacketHendler(packet):
                     exist = True
             if not exist:
                 AvialableWifiNetworks.append(packet)
-                print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
+                # print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
 
 
 
 #  WifiAdapter = selected interface
 def WifiNetworksFinder():
+    print("\nScanning for avialable wireless netwroks...\n")
     start_time = time.time()
     seconds = 10
     #  iface = the interfaces that we would like to sniff on
@@ -43,7 +44,7 @@ def WifiNetworksFinder():
     sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 10)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
-    print("\n\n\nThe Available Wifi Networks are:\\n")
+    print("\n\n\nThe Available Wifi Networks are:\n")
     for index, item in enumerate(AvialableWifiNetworks):
         print(f"{index} - SSID : {item.info} , MAC Address : {item.addr2} ,")
     print("\n\n")
@@ -53,11 +54,12 @@ def WifiNetworksFinder():
             if AvialableWifiNetworks[int(wifi_network_choice)]:
                 break
         except:
-            print("Please enter a number that corresponds with the choices available.")
+            print("Unavialable choise! please enter a number from the list above.")
     return AvialableWifiNetworks[int(wifi_network_choice)].addr2
 
 
 def ClientsFinder():
+    print("\n Scanning for clients...\n")
     sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\\n")
     for index, item in enumerate(Clients):

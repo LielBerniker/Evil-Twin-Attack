@@ -19,6 +19,7 @@ def WifiAdapterFinder():
     # wlan0 = wifi card
     wlan_pattern1 = re.compile("^wlan[0-9]+")
     wlan_pattern2 = re.compile("wlxc83a35c2e0b4")
+    # wlan_pattern2 = re.compile("w.*")
 
     # Subprocess is the task of running other programs in Python by creating a new process
     # We run the iwconfig command to look for wireless interfaces.
@@ -35,7 +36,7 @@ def WifiAdapterFinder():
         exit()
 
     # Menu to select WiFi interface from
-    print("The following WiFi interfaces are available:")
+    print("The Avialable WiFi interfaces are :\n")
     for index, item in enumerate(check_wifi_result):
         print(f"{index} - {item}")
     # Ensure the WiFi interface selected is valid. Simple menu with interfaces to select from.
@@ -46,9 +47,9 @@ def WifiAdapterFinder():
             if check_wifi_result[int(wifi_interface_choice)]:
                 break
         except:
-            print("Please enter a number that corresponds with the choices available.")
+            print("unavialable choise! please enter a number from the list above.")
 
     # For easy reference we call the selected interface hacknic
-    hacknic = check_wifi_result[int(wifi_interface_choice)]
-    print (hacknic)
-    return hacknic
+    Wifiadapter = check_wifi_result[int(wifi_interface_choice)]
+    # print (hacknic)
+    return Wifiadapter
