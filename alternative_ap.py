@@ -14,28 +14,24 @@ from threading import Thread
 from string import Template
 
 WifiAdapter = ""
+def change_template(path):
+    with open(path, 'r+') as f:
+        template = Template(f.read())
+        f.seek(0)
+        f.write(template.substitute(INTERFACE=WifiAdapter))
+        f.truncate()
+
 def prepare_fake_access_point():
     """
     prepare the environment setup for creating the fake access point
     :param access_point_bssid represent the network name
     """
-    bash('rm -rf build/')
-    bash('cp -r configuration_files build_up')
-    with open('build_up/hostapd.conf', 'r+') as f:
-        template = Template(f.read())
-        f.seek(0)
-        f.write(template.substitute(INTERFACE=WifiAdapter))
-        f.truncate()
-    with open('build_up/dnsmasq.conf', 'r+') as f:
-        template = Template(f.read())
-        f.seek(0)
-        f.write(template.substitute(INTERFACE=WifiAdapter))
-        f.truncate()
-    with open('build_up/prepare_ap.sh', 'r+') as f:
-        template = Template(f.read())
-        f.seek(0)
-        f.write(template.substitute(INTERFACE=WifiAdapter))
-        f.truncate()
+    return os.system('rm -rf build/')
+    return os.system('cp -r configuration_files build_up')
+    change_template('build_up/hostapd.conf')
+    change_template('build_up/dnsmasq.conf')
+    change_template('build_up/prepare_ap.sh')
+    change_template('build_up/reboot.sh')
     return os.system('sudo sh build_up/prepare_ap.sh')
 
 if __name__ == "__main__":
@@ -46,6 +42,8 @@ if __name__ == "__main__":
     MonitorMode(WifiAdapter)
     #scanning for wifi network to attack
     prepare_fake_access_point()
+    time.sleep(120)
+    os.system('sudo sh configuration_files/reboot.sh')
 
 
 
