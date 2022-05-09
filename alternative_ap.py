@@ -19,6 +19,8 @@ def prepare_fake_access_point():
     prepare the environment setup for creating the fake access point
     :param access_point_bssid represent the network name
     """
+    bash('rm -rf build/')
+    bash('cp -r configuration_files build_up')
     with open('build_up/hostapd.conf', 'r+') as f:
         template = Template(f.read())
         f.seek(0)
