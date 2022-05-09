@@ -26,13 +26,14 @@ def prepare_fake_access_point():
     prepare the environment setup for creating the fake access point
     :param access_point_bssid represent the network name
     """
-    return os.system('rm -rf build/')
-    return os.system('cp -r configuration_files build_up')
+    os.system('rm -rf build/')
+    os.system('cp -r configuration_files build_up')
     change_template('build_up/hostapd.conf')
     change_template('build_up/dnsmasq.conf')
     change_template('build_up/prepare_ap.sh')
     change_template('build_up/reboot.sh')
-    return os.system('sudo sh build_up/prepare_ap.sh')
+    print("finish prepare")
+    os.system('sudo sh build_up/prepare_ap.sh')
 
 if __name__ == "__main__":
 

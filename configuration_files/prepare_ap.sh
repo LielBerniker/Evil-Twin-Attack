@@ -13,8 +13,8 @@ route add default gw 10.0.0.1
 
 
 echo start
-dnsmasq -C build/dnsmasq.conf
-hostapd build/hostapd.conf -B
+dnsmasq -C build_up/dnsmasq.conf
+hostapd build_up/hostapd.conf -B
 echo end
 service apache2 start
 route add default gw 10.0.0.1
