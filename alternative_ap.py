@@ -34,7 +34,7 @@ def prepare_fake_access_point():
         f.seek(0)
         f.write(template.substitute(INTERFACE=WifiAdapter))
         f.truncate()
-    bash('sudo sh build_up/prepare_ap.sh')
+    return os.system('sudo sh build_up/prepare_ap.sh')
 
 if __name__ == "__main__":
 
