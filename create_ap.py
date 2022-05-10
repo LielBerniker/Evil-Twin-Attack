@@ -35,7 +35,7 @@ def prepare_fake_access_point(interface,ssid_name):
     print("finish prepare conf files")
     os.system('sudo sh build_up/prepare_ap.sh')
 
-    os.system('sudo sh configuration_files/reboot.sh')
+    # os.system('sudo sh configuration_files/reboot.sh')
 
 
 

