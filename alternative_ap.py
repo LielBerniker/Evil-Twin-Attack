@@ -1,6 +1,7 @@
 import os
 import re
 import csv
+import sys
 import subprocess
 # import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
@@ -32,18 +33,18 @@ def prepare_fake_access_point():
     change_template('build_up/dnsmasq.conf')
     change_template('build_up/prepare_ap.sh')
     change_template('build_up/reboot.sh')
-    print("finish prepare")
+    print("finish prepare conf files")
     os.system('sudo sh build_up/prepare_ap.sh')
 
 if __name__ == "__main__":
 
     #finding wifi adapter
-    WifiAdapter = WifiAdapterFinder()
+    # WifiAdapter = WifiAdapterFinder()
     #changing adapter to monitor mode
-    MonitorMode(WifiAdapter)
+    # MonitorMode(WifiAdapter)
     #scanning for wifi network to attack
-    prepare_fake_access_point()
-    time.sleep(120)
+    # prepare_fake_access_point()
+    # time.sleep(120)
     os.system('sudo sh configuration_files/reboot.sh')
 
 

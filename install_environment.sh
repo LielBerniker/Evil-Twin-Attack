@@ -9,4 +9,5 @@ sudo apt install dnsmaskq
 sudo apt install python3-scapy
 sudo pip install colorama
 sudo apt install net-tools
+sudo apt-get install gnome-terminal
 echo installing all requirements is finished
