@@ -4,7 +4,8 @@ import csv
 import subprocess
 # import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
-import WifiAdapter
+from WifiAdapter import MonitorMode
+from WifiAdapter import WifiAdapterFinder
 import Deauthenticate
 import Twin_create
 from scapy import all as sc
@@ -102,9 +103,9 @@ def CLientsSniffing(pkt):
 if __name__ == "__main__":
 
     #finding wifi adapter
-    WifiAdapter = WifiAdapter.WifiAdapterFinder()
+    WifiAdapter = WifiAdapterFinder()
     #changing adapter to monitor mode
-    WifiAdapter.MonitorMode(WifiAdapter)
+    MonitorMode(WifiAdapter)
     #scanning for wifi network to attack
     wifi_details = WifiNetworksFinder()
     ChosenWifiMA = wifi_details[0]
