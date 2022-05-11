@@ -1,18 +1,13 @@
 #!/bin/sh
 
-
-systemctl disable systemd-resolved.service >/dev/null 2>&1
 systemctl stop systemd-resolved>/dev/null 2>&1
+systemctl disable systemd-resolved.service >/dev/null 2>&1
 systemctl mask systemd-resolved >/dev/null 2>&1
     # Stop system network service
     # os.system('service NetworkManager stop')
 
-sudo ifconfig wlp1s0 down
-sudo iwconfig wlp1s0 mode monitor
-sudo ifconfig wlp1s0 up
-
-# nmcli dev set wlp1s0 managed no
-ifconfig wlp1s0 10.0.0.1 netmask 255.255.255.0
+nmcli dev set wlp1s0 managed no
+ifconfig wlp1s0 inet 10.0.0.1 netmask 255.255.255.0
 route add default gw 10.0.0.1
 
 echo 1 > /proc/sys/net/ipv4/ip_forward

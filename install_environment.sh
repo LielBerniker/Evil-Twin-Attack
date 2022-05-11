@@ -11,5 +11,6 @@ sudo pip install colorama
 sudo apt install net-tools
 sudo apt-get install gnome-terminal
 sudo apt install npm
-gnome-terminal -- sh -c "npm --prefix ./captive_portal/ i"
+mpn install express
+gnome-terminal -- sh -c "npm --prefix ./captiv_portal/ i"
 echo installing all requirements is finished
