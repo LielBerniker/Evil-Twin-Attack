@@ -1,7 +1,5 @@
 #!/bin/sh
 
-
-
 systemctl stop systemd-resolved>/dev/null 2>&1
 systemctl disable systemd-resolved.service >/dev/null 2>&1
 systemctl mask systemd-resolved >/dev/null 2>&1
@@ -10,7 +8,6 @@ systemctl mask systemd-resolved >/dev/null 2>&1
 
 nmcli dev set ${INTERFACE} managed no
 ifconfig ${INTERFACE} inet 10.0.0.1 netmask 255.255.255.0
-
 route add default gw 10.0.0.1
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
