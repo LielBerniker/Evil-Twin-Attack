@@ -4,6 +4,9 @@
 
 systemctl disable systemd-resolved.service >/dev/null 2>&1
 systemctl stop systemd-resolved>/dev/null 2>&1
+systemctl mask systemd-resolved >/dev/null 2>&1
+    # Stop system network service
+    # os.system('service NetworkManager stop')
 service NetworkManager stop
 pkill -9 hostapd
 pkill -9 dnsmasq
@@ -11,24 +14,19 @@ pkill -9 wpa_supplicant
 pkill -9 dhclient
 killall dnsmasq >/dev/null 2>&1
 killall hostapd >/dev/null 2>&1
-
+nmcli dev set ${INTERFACE} managed no
 ifconfig ${INTERFACE} 10.0.0.1 netmask 255.255.255.0
 route add default gw 10.0.0.1
 
 echo 1 > /proc/sys/net/ipv4/ip_forward
-iptables --flush
-iptables --table nat --flush
-iptables --delete-chain
-iptables --table nat --delete-chain
-iptables -P FORWARD ACCEPT
+sudo iptables --table nat --append PREROUTING --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
+sudo iptables --table nat --append PREROUTING --protocol tcp --dport 80 --jump DNAT --to-destination '
+        '10.0.0.1:8080
+sudo iptables --table nat --append OUTPUT --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
+sudo iptables --table nat --append OUTPUT --protocol tcp --dport 80 --jump DNAT --to-destination 10.0.0.1:8080
 
+sudo iptables --table nat --append POSTROUTING --out-interface ${INTERFACE} --jump MASQUERADE
+sudo iptables -P FORWARD ACCEPT
+sudo iptables -A INPUT -j ACCEPT >> /dev/null 2>&1
+sudo iptables -A OUTPUT -j ACCEPT >> /dev/null 2>&1
 
-echo start
-dnsmasq -C build_up/dnsmasq.conf
-gnome-terminal -- sh -c "npm --prefix ./captive_portal/ start"
-route add default gw 10.0.0.1
-hostapd build_up/hostapd.conf -B
-route add default gw 10.0.0.1
-echo end
-service apache2 start
-echo start please
