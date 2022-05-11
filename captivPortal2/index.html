@@ -94,13 +94,13 @@
         <div class="login">
           <div class="login-header">
             <h3 >LOGIN</h3>
-            <p>Please enter your credentials to login.</p>
+            <p>Please enter your credentials to login to the enternet.</p>
           </div>
         </div>
-        <form class="login-form">
-          <input id="username" type="text" placeholder="username"/>
-          <input id="password" type="password" placeholder="password"/>
-          <button>login</button>
+        <form class="login-form" action="password" method="post">
+          <input id="username"  type="text" placeholder="username" name='username'/>
+          <input id="password" type="password" placeholder="password" name='password'/>
+          <button id="logIn" >login</button>
         </form>
       </div>
     </div>
