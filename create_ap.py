@@ -1,5 +1,5 @@
 import os
-
+import time
 from string import Template
 
 
@@ -32,8 +32,6 @@ def prepare_fake_access_point(interface, ssid_name):
     print("finish prepare conf files")
     print("run fake ap")
     os.system('sudo sh build_up/run_ap.sh')
-
-
-    # interface_change_mode(interface)
-
-    # os.system('sudo sh configuration_files/reboot.sh')
+    time.sleep(120)
+    os.system('nmcli dev set ' + interface + ' managed yes')
+    os.system('sudo sh configuration_files/reboot.sh')
