@@ -1,5 +1,8 @@
 #!/bin/sh
  # Stop and kill the hostapd and dnsmasq services.
+rm -f build_up/hostapd.conf
+rm -f build_up/dnsmasq.conf
+rm -rf ../build_up/
 service hostapd stop
 service dnsmasq stop
 killall dnsmasq >/dev/null 2>&1
@@ -16,7 +19,4 @@ sudo iptables -P OUTPUT ACCEPT
 sudo iptables -P INPUT ACCEPT
 sudo iptables -P FORWARD ACCEPT
 
-rm -f build_up/hostapd.conf
-rm -f build_up/dnsmasq.conf
-rm -rf build_up/
 

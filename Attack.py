@@ -43,7 +43,7 @@ def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 30)
+    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 60)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
@@ -66,7 +66,7 @@ def WifiNetworksFinder():
 
 def ClientsFinder():
     print("\nScanning for clients...\n")
-    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
+    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 90)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
@@ -114,6 +114,8 @@ if __name__ == "__main__":
             WifiAdapter = WifiAdapterFinder()
             #changing adapter to monitor mode
             MonitorMode(WifiAdapter)
+            # os.system("sudo iw dev "+WifiAdapter+" add wlan_new type monitor")
+            # os.system("sudo ifconfig wlan_new up")
             #scanning for wifi network to attack
             wifi_details = WifiNetworksFinder()
             ChosenWifiMA = wifi_details[0]

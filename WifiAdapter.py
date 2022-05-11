@@ -21,7 +21,7 @@ def WifiAdapterFinder():
     # Regex to find wireless interfaces.
     # wlan0 = wifi card
     wlan_pattern1 = re.compile("^wlan[0-9]+")
-    wlan_pattern2 = re.compile("wlxc83a35c2e0b4")
+    wlan_pattern2 = re.compile("wlx.*")
     # wlan_pattern2 = re.compile("w.*")
 
 
@@ -57,7 +57,14 @@ def WifiAdapterFinder():
 
 
     # For easy reference we call the selected interface hacknic
-    Wifiadapter = check_wifi_result[int(wifi_interface_choice)]
+    
+    Wifiadapterw = check_wifi_result[int(wifi_interface_choice)]
+    i=0
+    for c in Wifiadapterw:
+        if c == ' ':
+            break
+        i = i+1
+    Wifiadapter = Wifiadapterw[0:i]
     # print (hacknic)
     return Wifiadapter
 

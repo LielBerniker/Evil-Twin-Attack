@@ -35,3 +35,14 @@ def prepare_fake_access_point(interface, ssid_name):
     time.sleep(120)
     os.system('nmcli dev set ' + interface + ' managed yes')
     os.system('sudo sh configuration_files/reboot.sh')
+
+
+
+
+
+# if __name__ == "__main__":
+#     prepare_fake_access_point("wlp1s0", "ssid_name")
+
+  
+    
+

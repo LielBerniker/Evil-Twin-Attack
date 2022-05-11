@@ -4,7 +4,7 @@ import csv
 import subprocess
 from tabnanny import verbose
 from scapy.layers.l2 import ARP, Ether
-import WifiAdapter
+from WifiAdapter import *
 import Deauthenticate
 import Twin_create
 import Attack
