@@ -22,18 +22,18 @@ def prepare_fake_access_point(interface, ssid_name):
     prepare the environment setup for creating the fake access point
     :param access_point_bssid represent the network name
     """
-    os.system('sudo sh configuration_files/reboot.sh')
-    os.system('rm -rf build_up/')
-    os.system('cp -r configuration_files build_up')
-    change_template('build_up/hostapd.conf', interface, ssid_name)
-    change_template('build_up/dnsmasq.conf', interface, ssid_name)
-    change_template('build_up/prepare_ap.sh', interface, ssid_name)
-    os.system('sudo sh build_up/prepare_ap.sh')
-    print("finish prepare conf files")
-    print("run fake ap")
-    os.system('sudo sh build_up/run_ap.sh')
+    # os.system('sudo sh configuration_files/reboot.sh')
+    # os.system('rm -rf build_up/')
+    # os.system('cp -r configuration_files build_up')
+    # change_template('build_up/hostapd.conf', interface, ssid_name)
+    # change_template('build_up/dnsmasq.conf', interface, ssid_name)
+    # change_template('build_up/prepare_ap.sh', interface, ssid_name)
+    # os.system('sudo sh build_up/prepare_ap.sh')
+    # print("finish prepare conf files")
+    # print("run fake ap")
+    # os.system('sudo sh build_up/run_ap.sh')
 
 
     # interface_change_mode(interface)
 
-    # os.system('sudo sh configuration_files/reboot.sh')
+    os.system('sudo sh configuration_files/reboot.sh')

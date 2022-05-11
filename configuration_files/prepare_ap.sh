@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 
@@ -7,14 +6,12 @@ systemctl stop systemd-resolved>/dev/null 2>&1
 systemctl mask systemd-resolved >/dev/null 2>&1
     # Stop system network service
     # os.system('service NetworkManager stop')
-service NetworkManager stop
-pkill -9 hostapd
-pkill -9 dnsmasq
-pkill -9 wpa_supplicant
-pkill -9 dhclient
-killall dnsmasq >/dev/null 2>&1
-killall hostapd >/dev/null 2>&1
-nmcli dev set ${INTERFACE} managed no
+
+sudo ifconfig ${INTERFACE} down
+sudo iwconfig ${INTERFACE} mode monitor
+sudo ifconfig ${INTERFACE} up
+
+# nmcli dev set ${INTERFACE} managed no
 ifconfig ${INTERFACE} 10.0.0.1 netmask 255.255.255.0
 route add default gw 10.0.0.1
 
@@ -29,4 +26,3 @@ sudo iptables --table nat --append POSTROUTING --out-interface ${INTERFACE} --ju
 sudo iptables -P FORWARD ACCEPT
 sudo iptables -A INPUT -j ACCEPT >> /dev/null 2>&1
 sudo iptables -A OUTPUT -j ACCEPT >> /dev/null 2>&1
-
