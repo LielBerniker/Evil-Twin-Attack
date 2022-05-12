@@ -23,29 +23,22 @@ WifiAdapter = ""
 
 
 
-def PacketHendler(packet):
+def WifiFinderHandler(packet):
     #if packet end with 11 like 802.11
     if packet.haslayer(sc.Dot11):
         #type -menegment subtype-beacon
         if packet.type==0 and packet.subtype==8:
-            #address 2 - transmitter.
-            # add the packet to AvialableWifiNetworks if not already in
             if packet.addr2 not in tmp:
                 AvialableWifiNetworks.append(packet)
                 tmp.append(packet.addr2)
-                # print("Access Point Mac: %s with SSID:%s" %(packet.addr2 ,packet.info))
 
 
-
-
-#  WifiAdapter = selected interface
 def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
-    #  iface = the interfaces that we would like to sniff on
-    # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=WifiAdapter, prn=PacketHendler , timeout = 60)
+    # sniff packets with WifiAdapter and calls to handler function for each packet
+    sc.sniff(iface=WifiAdapter, prn=WifiFinderHandler , timeout = 60)
 
-    # printing the Available Wifi Networks withe their ssid(name) and their mac address
+    # printing the Available Wifi Networks with their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
     for index, item in enumerate(AvialableWifiNetworks):
         print(f"{index} - SSID : {str(item.info)[2:len(str(item.info))-1]} , MAC Address : {item.addr2} ,")
@@ -59,13 +52,14 @@ def WifiNetworksFinder():
             print("Unavialable choise! please enter a number from the list above.")
     ChosenWifiSSID = AvialableWifiNetworks[int(wifi_network_choice)].info
     ChosenWifiMA = AvialableWifiNetworks[int(wifi_network_choice)].addr2
-    # ChosenWifiSSID = str[2:len(str)]
     return [ChosenWifiMA , ChosenWifiSSID]
 
 
 
 def ClientsFinder():
     print("\nScanning for clients...\n")
+    # sniff packets with WifiAdapter and calls to handler function for each packet , 
+    # to find out who are the clients that connected to the chosen wifi network 
     sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 90)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
@@ -89,7 +83,8 @@ def CLientsSniffing(pkt):
         # Check to make sure this is a management frame (type=0) and that
         # the subtype is one of our management frame subtypes indicating a
         # a wireless client
-        # if pkt.type == 0 and pkt.subtype in stamgmtstypes:
+        # if pkt.type == 0 and 
+        if pkt.subtype in stamgmtstypes:
         #     if (pkt.addr1 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA):
         #         print(pkt.summary())
         #         if pkt.info not in Clients:
@@ -114,8 +109,6 @@ if __name__ == "__main__":
             WifiAdapter = WifiAdapterFinder()
             #changing adapter to monitor mode
             MonitorMode(WifiAdapter)
-            # os.system("sudo iw dev "+WifiAdapter+" add wlan_new type monitor")
-            # os.system("sudo ifconfig wlan_new up")
             #scanning for wifi network to attack
             wifi_details = WifiNetworksFinder()
             ChosenWifiMA = wifi_details[0]

