@@ -16,20 +16,22 @@ route add default gw 10.0.0.1
 # IP forwarding/Internet routing - is a process used to determine which path a packet or datagram can be sent.
 #
 echo 1 > /proc/sys/net/ipv4/ip_forward
-# go to the nat table and filter the tcp packets, all packet match the destination of port 80 redirect it to port 8080
+# in iptables the PREROUTING is : Immediately after being received by an interface.
+# go to the nat table ,prerouting ,tcp packets, all packet match the destination of port 80 wil be redirected to port 8080
 # and redirect to the destination ip 10.0.0.1
 sudo iptables --table nat --append PREROUTING --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
 sudo iptables --table nat --append PREROUTING --protocol tcp --dport 80 --jump DNAT --to-destination '
         '10.0.0.1:8080
-
-# if you want to process packets as they leave your system, but without doing any NAT or MANGLE(ing),
-# you’ll look to the OUTPUT chain within the FILTER table
-# here we
+# in iptables the OUTPUT is: Right after being created by a local process.
+# go to the nat table ,output ,tcp packets, all packet match the destination of port 80 wil be redirected to port 8080
+# and redirect to the destination ip 10.0.0.1
 sudo iptables --table nat --append OUTPUT --protocol tcp --dport 80 --jump REDIRECT --to-port 8080
 sudo iptables --table nat --append OUTPUT --protocol tcp --dport 80 --jump DNAT --to-destination 10.0.0.1:8080
+
 #in iptables the POSTROUTING is: Right before leaving an interface in the packet traffic
 # here we set it to our interface
 sudo iptables --table nat --append POSTROUTING --out-interface ${INTERFACE} --jump MASQUERADE
+
 # Enable forwarding
 sudo iptables -P FORWARD ACCEPT
 
