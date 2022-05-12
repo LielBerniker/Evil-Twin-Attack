@@ -30,14 +30,18 @@ def WifiFinderHandler(packet):
         if packet.type==0 and packet.subtype==8:
             if packet.addr2 not in tmp:
                 AvialableWifiNetworks.append(packet)
+                # print(f"\n\naddr1 - {packet.addr1} , addr2 - {packet.addr2} , addr3 - {packet.addr3}\n\n")
                 tmp.append(packet.addr2)
 
 
 def WifiNetworksFinder():
     print("\nScanning for avialable wireless netwroks...\n")
     # sniff packets with WifiAdapter and calls to handler function for each packet
-    sc.sniff(iface=WifiAdapter, prn=WifiFinderHandler , timeout = 60)
-
+    for ch in range (1,14):
+        c = str(ch)
+        cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
+        os.system(cmd)
+        sc.sniff(iface=WifiAdapter, prn=WifiFinderHandler , timeout = 7)
     # printing the Available Wifi Networks with their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
     for index, item in enumerate(AvialableWifiNetworks):
@@ -60,7 +64,12 @@ def ClientsFinder():
     print("\nScanning for clients...\n")
     # sniff packets with WifiAdapter and calls to handler function for each packet , 
     # to find out who are the clients that connected to the chosen wifi network 
-    sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 90)
+    for ch in range (1,14):
+        c = str(ch)
+        cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
+        os.system(cmd)
+        sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 7)
+    # sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
         print(f"{index} MAC Address : {item} ,")
@@ -91,6 +100,7 @@ def CLientsSniffing(pkt):
         #             Clients.append(pkt.info)
             if pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
                 Clients.append(pkt.addr2)
+                # print(f"\n\naddr1 - {pkt.addr1} , addr2 - {pkt.addr2} , addr3 - {pkt.addr3}\n\n")
             # print(len(Clients),"     " ,pkt.addr2)
 
 

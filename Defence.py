@@ -19,6 +19,7 @@ DuplicateNetworks = []
 NonDuplicateNetworks = []
 Dups = []
 Clients = []
+DefenceNetMA = ""
 
 def WifiSniffingHandler(packet):
     #if packet end with 11 like 802.11
@@ -35,7 +36,11 @@ def FindDuplicateNetworks(Wifiadapter):
     print("\nScanning for malicious wireless netwroks...\n")
     #  iface = the interfaces that we would like to sniff on
     # prn = allows us to pass a function that executes with each packet sniffed
-    sc.sniff(iface=Wifiadapter, prn=WifiSniffingHandler , timeout = 60)
+    for ch in range (1,14):
+        c = str(ch)
+        cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
+        os.system(cmd)
+        sc.sniff(iface=Wifiadapter, prn=WifiSniffingHandler , timeout = 7)
     # index = 0
     for net in AllAvialableNetworks:
         # print("{index} - SSID : {net.info} Mac address : {net.addr2}")
@@ -49,22 +54,19 @@ def FindDuplicateNetworks(Wifiadapter):
 
 
 def DisconnectAll(network , Wifiadapter):
-    # client_mac = 'ff:ff:ff:ff:ff:ff'  # to disconnect all the internet devices
-    # client_receive_packet = sc.RadioTap() / sc.Dot11(addr1=client_mac, addr2=network.addr2,
-    #                                            addr3=network.addr2) / sc.Dot11Deauth()
-    # access_point_receive_packet = sc.RadioTap() / sc.Dot11(addr1=network.addr2, addr2=client_mac,
-    #                                                  addr3=client_mac) / sc.Dot11Deauth()
-    # sc.sendp(client_receive_packet, count=100, iface=Wifiadapter , verbose = 0)
-    # sc.sendp(access_point_receive_packet, count=100, iface=Wifiadapter , verbose = 0)
-    
     Frames = []
     for ma in Clients:
         dot11 = sc.Dot11(addr1=ma, addr2=network.addr2, addr3=network.addr2)
         frame = sc.RadioTap()/dot11/sc.Dot11Deauth(reason=7)
         Frames.append(frame)
     while True:
-        for fr in Frames:    
-            sc.sendp(fr, iface=Wifiadapter, inter=0.100 , verbose = 0)
+        for ch in range (1,14):
+            # sc.sendp(fr, iface=Wifiadapter, inter=0.100 , verbose = 0)
+            for fr in Frames:
+                c = str(ch)
+                cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
+                os.system(cmd)    
+                sc.sendp(fr, iface=Wifiadapter, inter=0.100 , verbose = 0)
 
     return 0
 
@@ -74,7 +76,11 @@ def FindClient(net , WifiAdapter):
     print("\nScanning for clients...\n")
     # sniff packets with WifiAdapter and calls to handler function for each packet , 
     # to find out who are the clients that connected to the chosen wifi network 
-    sc.sniff(iface=WifiAdapter, prn=FindClientHandler , timeout = 40)
+    for ch in range (1,14):
+        c = str(ch)
+        cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
+        os.system(cmd)
+        sc.sniff(iface=WifiAdapter, prn=FindClientHandler , timeout = 7)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
 
 def FindClientHandler(pkt):
@@ -82,7 +88,7 @@ def FindClientHandler(pkt):
     # Make sure the packet has the Scapy Dot11 layer present
     if pkt.haslayer(sc.Dot11):
         if pkt.subtype in stamgmtstypes:
-            if pkt.addr3 == net.addr2 and pkt.addr2 not in Clients and pkt.addr2 != net.addr2:
+            if pkt.addr3 == DefenceNetMA and pkt.addr2 not in Clients and pkt.addr2 != DefenceNetMA:
                 Clients.append(pkt.addr2)
 
 
@@ -101,13 +107,15 @@ if __name__ == "__main__":
     while True:
             net_index = input("\nPlease select the Wifi network you want to defence from : ")
             try:
-                if AllAvialableNetworks[int(net_index)]:
+                if Dups[int(net_index)]:
                     break
             except:
                 print("Please enter a number that corresponds with the choices available.")
+    DefenceNetMA = Dups[int(net_index)].addr2
     FindClient(Dups[int(net_index)] , WifiAdapter)
     print("\n clinets : ")
     for cl in Clients:
         print(cl)
+    print("\n Disconnecting al users from the malicious network..\n")
     DisconnectAll(Dups[int(net_index)] , WifiAdapter)
     
