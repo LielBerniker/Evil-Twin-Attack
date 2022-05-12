@@ -7,7 +7,6 @@ from tabnanny import verbose
 from scapy.layers.l2 import ARP, Ether
 from WifiAdapter import *
 import Deauthenticate
-import Twin_create
 import Attack
 from scapy import all as sc
 import time
@@ -60,7 +59,7 @@ def DisconnectAll(network , Wifiadapter):
     
     Frames = []
     for ma in Clients:
-        dot11 = sc.Dot11(addr1=ma, addr2=network.info, addr3=network.info)
+        dot11 = sc.Dot11(addr1=ma, addr2=network.addr2, addr3=network.addr2)
         frame = sc.RadioTap()/dot11/sc.Dot11Deauth(reason=7)
         Frames.append(frame)
     while True:
@@ -102,7 +101,7 @@ if __name__ == "__main__":
     while True:
             net_index = input("\nPlease select the Wifi network you want to defence from : ")
             try:
-                if Dups[int(net_index)]:
+                if AllAvialableNetworks[int(net_index)]:
                     break
             except:
                 print("Please enter a number that corresponds with the choices available.")
