@@ -38,8 +38,9 @@ def prepare_fake_access_point(interface, ssid_name):
     print("start the fake access point")
     # run the fake access point by hostapd and dnsmasq
     os.system('sudo sh build_up/run_ap.sh')
+    
+    time.sleep(300)
 
-    time.sleep(800)
 
     print("stop the fake access point")
     # set the current interface back to managed mode

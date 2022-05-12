@@ -40,7 +40,7 @@ def FindDuplicateNetworks(Wifiadapter):
         c = str(ch)
         cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
         os.system(cmd)
-        sc.sniff(iface=Wifiadapter, prn=WifiSniffingHandler , timeout = 7)
+        sc.sniff(iface=Wifiadapter, prn=WifiSniffingHandler , timeout = 5)
     # index = 0
     for net in AllAvialableNetworks:
         # print("{index} - SSID : {net.info} Mac address : {net.addr2}")
@@ -61,7 +61,6 @@ def DisconnectAll(network , Wifiadapter):
         Frames.append(frame)
     while True:
         for ch in range (1,14):
-            # sc.sendp(fr, iface=Wifiadapter, inter=0.100 , verbose = 0)
             for fr in Frames:
                 c = str(ch)
                 cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
@@ -80,7 +79,7 @@ def FindClient(net , WifiAdapter):
         c = str(ch)
         cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
         os.system(cmd)
-        sc.sniff(iface=WifiAdapter, prn=FindClientHandler , timeout = 7)
+        sc.sniff(iface=WifiAdapter, prn=FindClientHandler , timeout = 5)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
 
 def FindClientHandler(pkt):

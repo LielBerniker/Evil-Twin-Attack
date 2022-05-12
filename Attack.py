@@ -30,7 +30,6 @@ def WifiFinderHandler(packet):
         if packet.type==0 and packet.subtype==8:
             if packet.addr2 not in tmp:
                 AvialableWifiNetworks.append(packet)
-                # print(f"\n\naddr1 - {packet.addr1} , addr2 - {packet.addr2} , addr3 - {packet.addr3}\n\n")
                 tmp.append(packet.addr2)
 
 
@@ -41,7 +40,7 @@ def WifiNetworksFinder():
         c = str(ch)
         cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
         os.system(cmd)
-        sc.sniff(iface=WifiAdapter, prn=WifiFinderHandler , timeout = 7)
+        sc.sniff(iface=WifiAdapter, prn=WifiFinderHandler , timeout = 5)
     # printing the Available Wifi Networks with their ssid(name) and their mac address
     print("\n\n\nThe Available Wifi Networks are:\n")
     for index, item in enumerate(AvialableWifiNetworks):
@@ -68,7 +67,7 @@ def ClientsFinder():
         c = str(ch)
         cmd = "sudo iwconfig "+WifiAdapter+" channel "+ c
         os.system(cmd)
-        sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 7)
+        sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 5)
     # sc.sniff(iface=WifiAdapter, prn=CLientsSniffing , timeout = 40)
     print("\n\n\nThe Clients who connected to the chosen wifi are:\n")
     for index, item in enumerate(Clients):
@@ -89,19 +88,13 @@ def CLientsSniffing(pkt):
     stamgmtstypes = (0, 2, 4)
     # Make sure the packet has the Scapy Dot11 layer present
     if pkt.haslayer(sc.Dot11):
-        # Check to make sure this is a management frame (type=0) and that
-        # the subtype is one of our management frame subtypes indicating a
+        # Check to make sure that the subtype is one of our management frame subtypes indicating a
         # a wireless client
-        # if pkt.type == 0 and 
         if pkt.subtype in stamgmtstypes:
-        #     if (pkt.addr1 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA or pkt.addr3 == ChosenWifiMA):
-        #         print(pkt.summary())
-        #         if pkt.info not in Clients:
-        #             Clients.append(pkt.info)
+            # check that addr3 is same as the mac address of the chosen wifi and addr2 isnt the same as the chosen wifi  
             if pkt.addr3 == ChosenWifiMA and pkt.addr2 not in Clients and pkt.addr2 != ChosenWifiMA:
                 Clients.append(pkt.addr2)
-                # print(f"\n\naddr1 - {pkt.addr1} , addr2 - {pkt.addr2} , addr3 - {pkt.addr3}\n\n")
-            # print(len(Clients),"     " ,pkt.addr2)
+                
 
 
 
