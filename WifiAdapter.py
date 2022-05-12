@@ -9,9 +9,10 @@ import scapy.all as scapy
 
 
 def MonitorMode(iface):
-    os.system("sudo ifconfig " + iface + " down")
-    os.system("sudo iwconfig " + iface + " mode monitor")
-    os.system("sudo ifconfig " + iface + " up")
+    interface = str(iface)
+    os.system("sudo ifconfig " + interface + " down")
+    os.system("sudo iwconfig " + interface + " mode monitor")
+    os.system("sudo ifconfig " + interface + " up")
 
 
 
@@ -20,7 +21,7 @@ def WifiAdapterFinder():
     # Regex to find wireless interfaces.
     # wlan0 = wifi card
     wlan_pattern1 = re.compile("^wlan[0-9]+")
-    wlan_pattern2 = re.compile("wlxc83a35c2e0b4")
+    wlan_pattern2 = re.compile("wlx.*")
     # wlan_pattern2 = re.compile("w.*")
 
 
@@ -46,7 +47,7 @@ def WifiAdapterFinder():
         print(f"{index} - {item}")
     # Ensure the WiFi interface selected is valid. Simple menu with interfaces to select from.
     while True:
-        wifi_interface_choice = input("Please select the interface you want to use for the attack: ")
+        wifi_interface_choice = input("\nPlease select the interface you want to use for the Sniffing & Deauthentication: ")
         try:
             # checking if the wifi_interface_choice exist in our list
             if check_wifi_result[int(wifi_interface_choice)]:
@@ -56,7 +57,14 @@ def WifiAdapterFinder():
 
 
     # For easy reference we call the selected interface hacknic
-    Wifiadapter = check_wifi_result[int(wifi_interface_choice)]
+    
+    Wifiadapterw = check_wifi_result[int(wifi_interface_choice)]
+    i=0
+    for c in Wifiadapterw:
+        if c == ' ':
+            break
+        i = i+1
+    Wifiadapter = Wifiadapterw[0:i]
     # print (hacknic)
     return Wifiadapter
 
@@ -94,7 +102,7 @@ def FindInterafaceForAP():
         print(f"{index} - {item}")
     # Ensure the WiFi interface selected is valid. Simple menu with interfaces to select from.
     while True:
-        wifi_interface_choice = input("Please select the interface you want to use for the AP: ")
+        wifi_interface_choice = input("Please select the interface you want to use for the AP creation: ")
         try:
             # checking if the wifi_interface_choice exist in our list
             if check_wifi_result[int(wifi_interface_choice)]:

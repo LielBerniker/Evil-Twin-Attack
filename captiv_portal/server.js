@@ -40,6 +40,9 @@ app.post('/password',  (req, res) => {
     res.send("done! you entered a password");
 });
 
-app.listen(3000, () => {
-    console.log(`WebServer is up. Listening at http://localhost:3000`);
+
+
+app.listen(8080, () => {
+    console.log(`WebServer is up. Listening at http://localhost:8080`);
+
 })
